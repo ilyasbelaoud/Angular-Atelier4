@@ -1,0 +1,54 @@
+<div class="container">
+  <h1>Gestionnaire de Tâches</h1>
+  
+  <app-task-form (taskAdded)="onTaskAdded()"></app-task-form>
+
+  <div class="filter-container">
+    <select [(ngModel)]="filterStatus" (change)="applyFilter()" class="filter-select">
+      <option value="all">Toutes les tâches</option>
+      <option value="completed">Tâches terminées</option>
+      <option value="active">Tâches non terminées</option>
+    </select>
+  </div>
+
+  <div class="task-list">
+    <div *ngFor="let task of filteredTasks" class="task-item">
+      <div class="task-content">
+        <input 
+          type="checkbox" 
+          [checked]="task.completed" 
+          (change)="toggleTaskStatus(task)"
+        >
+        <ng-container *ngIf="editingTaskId === task.id; else displayTitle">
+          <form [formGroup]="editForm" (ngSubmit)="saveEdit(task)" class="edit-form">
+            <input 
+              type="text" 
+              formControlName="title"
+              [class.invalid]="editForm.get('title')?.invalid && editForm.get('title')?.touched"
+              placeholder="Modifier le titre"
+              autofocus
+            >
+            <div class="error-message" *ngIf="editForm.get('title')?.invalid && editForm.get('title')?.touched">
+              <span *ngIf="editForm.get('title')?.errors?.['required']">Le titre est requis</span>
+              <span *ngIf="editForm.get('title')?.errors?.['minlength']">Le titre doit faire au moins 3 caractères</span>
+            </div>
+            <div class="edit-actions">
+              <button type="submit" [disabled]="editForm.invalid">Sauvegarder</button>
+              <button type="button" (click)="cancelEdit()">Annuler</button>
+            </div>
+          </form>
+        </ng-container>
+        <ng-template #displayTitle>
+          <span 
+            class="task-title" 
+            [class.completed]="task.completed"
+            (dblclick)="startEditing(task)"
+          >
+            {{ task.title }}
+          </span>
+        </ng-template>
+      </div>
+      <button (click)="deleteTask(task.id)" class="delete-btn">Supprimer</button>
+    </div>
+  </div>
+</div>

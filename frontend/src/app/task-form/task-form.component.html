@@ -1,0 +1,15 @@
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+  <div class="form-group">
+    <input 
+      type="text" 
+      formControlName="title" 
+      placeholder="Nouvelle tâche"
+      [class.invalid]="title?.invalid && title?.touched"
+    >
+    <div class="error-message" *ngIf="title?.invalid && title?.touched">
+      <span *ngIf="title?.errors?.['required']">Le titre est requis</span>
+      <span *ngIf="title?.errors?.['minlength']">Le titre doit faire au moins 3 caractères</span>
+    </div>
+  </div>
+  <button type="submit" [disabled]="taskForm.invalid">Ajouter</button>
+</form>
